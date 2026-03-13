@@ -25,12 +25,52 @@ res_ser = {
             4.64, 4.75, 4.87, 4.99, 5.11, 5.23, 5.36, 5.49, 5.62, 5.76, 
             5.9, 6.04, 6.19, 6.34, 6.49, 6.65, 6.81, 6.98, 7.15, 7.32, 
             7.5, 7.68, 7.87, 8.06, 8.25, 8.45, 8.66, 8.87, 9.09, 9.31, 9.53, 9.76],
-
 }
 print(res_ser["E3"])
-
 root = tk.Tk()
 root.title("E-series rezistorov")
 root.geometry("200x400")
+def on_chcekbox_click(selected):
+    for name, var in checkbox_vars.items():
+        if name != selected:
+            var.set(0)
+    if checkbox_vars[selected].get() == 1:
+        update_combobox()
+
+def update_combobox():
+    selected_series = None
+    for series, var in checkbox_vars.items():
+        if var.get() == 1:
+            selected_series = series
+        else:
+            var.set(0)
+    if selected_series:
+        combo_value = [f"{v} Ω" for v in res_ser[selected_series]]
+        combobox['values'] = combo_value
+        combobox.current(0)
+
+def on_combobox_selected(event):
+    selected_value = combobox.get()
+    pass
+checkbox_vars = {}
+i = 0
+for series, values in res_ser.items():
+    var = tk.IntVar()
+    checkbox = ttk.Checkbutton(
+        root, text= series, variable = var, 
+        command=lambda s=series: on_chcekbox_click(s)
+    )
+
+    checkbox.grid(row=i%2+1, column=i//2, columnspan=1, padx=5, pady=5)
+    checkbox_vars[series] = var
+    i+=1
+label = ttk.Label(text="Resistorove rady : ")
+label.grid(row=0, column=0, columnspan=3, padx=5, pady=5, sticky="w")
+
+tk.Label(root, text="Hodnoty : ").grid(row=3, column=0,columnspan=3, padx=5, pady=5, sticky="w")
+
+combobox = ttk.Combobox(root, state="readonly")
+combobox.grid(row=4, column=0, columnspan=3, padx=5, pady=5)
+combobox.bind("<<ComboboxSelected>>", on_combobox_selected)
 
 root.mainloop()
